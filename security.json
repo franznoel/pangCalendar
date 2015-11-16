@@ -1,0 +1,18 @@
+{
+  "rules": {
+    "flashdeals" : {
+      ".read": true,
+      ".write": "newData.exists() && newData.hasChildren(['name','wasPrice','nowPrice','savings','discount','imageUrl','url','ends','available'])"
+    },
+    "users" : {
+      ".read": true,
+      ".write": true
+    },
+    "marketing-calendar" : {
+      ".read": true,
+      ".write": true
+    },
+    ".read":true,
+    ".write": true
+  }
+}

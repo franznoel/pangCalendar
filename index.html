@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Login</title>
+		<!-- Bootstrap -->
+		<link rel="stylesheet" type="text/css" href="http://static.guitarcenter.com/static/gc/Libs/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="http://static.guitarcenter.com/static/gc/Libs/bootstrap/css/bootstrap-theme.min.css" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script type="text/javascript" src="/libs/bootstrap/js/bootstrap.min.js"></script>
+
+		<script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="/css/style.css" />
+
+	<body>
+		<nav class="navbar navbar-default">
+		  <div class="container-fluid">
+		    <!-- Brand and toggle get grouped for better mobile display -->
+		    <div class="navbar-header">
+		      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+		        <span class="sr-only">Toggle navigation</span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		      </button>
+		      <a class="navbar-brand" href="/">GC Marketing</a>
+		    </div>
+		  </div><!-- /.container-fluid -->
+		</nav>
+
+		<div class="row-fluid">
+			<div class="col-md-offset-4 col-md-4">
+				<div id="login-panel" class="panel panel-default">
+					<div class="panel-heading">
+						<h2 class="nulled panel-title">GC Marketing Login</h2>
+					</div>
+					<div class="panel-body">
+						<div id="login-error">
+
+						</div>
+						<form id="login-form" method="post">
+							<div class="form-group">
+								<label for="email">Email</label>
+								<input id="email" type="text" class="form-control" name="email" value="" placeholder="Email" />
+							</div>
+							<div class="form-group">
+								<label for="password">Password</label>
+								<input id="password" type="password" class="form-control" name="password" value="" placeholder="Password" />
+							</div>
+							<div class="btn-toolbar">
+								<input type="submit" name="login" class="btn btn-primary" value="Login">
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var ref = new Firebase("https://gc-marketing.firebaseio.com/flashdeals");
+
+			$("#login-form").on("submit",function(event) {
+				event.preventDefault();
+				var email = $('#email').val();
+				var password = $('#password').val();
+				var data = { "email":email,"password":password }
+
+				ref.authWithPassword(data,function(error,authData) {
+					if (navigator.onLine==false) {
+						var errorMessage = '<div class="alert alert-danger">You are not connected to the Internet.</div>'
+						$("#login-error").html(errorMessage);
+					} else if (error) {
+						var errorMessage = '<div class="alert alert-danger">'+ error +'</div>'
+						$("#login-error").html(errorMessage);
+					} else {
+						var successMessage = '<div class="alert alert-success">Authenticated successfully with payload!</div>';
+						$("#login-error").html(successMessage);
+						// Add save cookie here.
+						window.location.replace("/marketing-calendar.html");
+					}
+				});
+			});
+		</script>
+		<script type="text/javascript">
+			// login
+			var login = function() {
+			}
+		</script>
+	</head>
+	</body>
+</html>

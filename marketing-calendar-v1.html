@@ -1,0 +1,262 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Marketing Calendar</title>
+		<link rel="stylesheet" type="text/css" href="/libs/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="/libs/bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="/libs/fullcalendar/fullcalendar.min.css" />
+		<link rel="stylesheet" type="text/css" href="/libs/scheduler/scheduler.min.css" />
+		<link rel="stylesheet" type="text/css" href="/css/style.css" />
+
+		<script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+		<script type="text/javascript" src="/libs/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/libs/moment/moment.min.js"></script>
+		<script type="text/javascript" src="/libs/fullcalendar/fullcalendar.min.js"></script>
+		<script type="text/javascript" src="/libs/scheduler/scheduler.min.js"></script>
+		<script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default">
+		  <div class="container-fluid">
+		    <!-- Brand and toggle get grouped for better mobile display -->
+		    <div class="navbar-header">
+		      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+		        <span class="sr-only">Toggle navigation</span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		      </button>
+		      <a class="navbar-brand" href="/">GC Marketing</a>
+		    </div>
+		  </div><!-- /.container-fluid -->
+		</nav>
+
+		<div class="row-fluid">
+			<div class="col-md-2">
+				<div class="list-group">
+					<a href="/flashdeals.html" class="list-group-item">Flash Deals</a>
+					<a href="/marketing-calendar.html" class="list-group-item active">Marketing Calendar</a>
+					<a href="/image-requests.html" class="list-group-item">Image Requests</a>
+					<a href="/chat-rooms.html" class="list-group-item">Chat Rooms</a>
+					<a href="/users.html" class="list-group-item">Users</a>
+				</div>
+			</div>
+			<div class="col-md-10">
+				<h3>Marketing Calendar</h3>
+				<div id="marketing-buttons" class="btn-toolbar">
+					<a id="add-resource-button" href="#add-resource" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#resources-modal">Add Resource</a>
+					<a id="add-event-button" href="#add-event" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#event-modal">Add Event</a>
+				</div>
+				
+				<ul id="marketing-calendar-tabs" class="nav nav-tabs" role="tablist">
+					<li class="active"><a href="#calendar-display" data-toggle="tab">Calendar</a></li>
+					<li><a href="#resources-list" data-toggle="tab">Resources</a></li>
+					<li><a href="#events-list" data-toggle="tab">Events</a></li>
+				</ul>
+				<br/>
+				<div class="tab-content">
+					<div id="calendar-display" class="tab-pane active">
+						<div id="marketing-calendar"></div>
+						<div id="errorContainer"></div>
+					</div>
+					<div id="resources-list" class="tab-pane">
+						<h3>Resources</h3>
+						<table id="resources-table" class="table table-bordered table-hover">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Name</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+					<div id="events-list" class="tab-pane">
+						<h3>Events</h3>
+						<table id="events-table" class="table table-bordered table-hover">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Resource ID</th>
+									<th>Title</th>
+									<th>URL</th>
+									<th>Start</th>
+									<th>End</th>
+									<th>Event Color</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- #resources-modal -->
+		<div id="resource-modal" class="modal fade">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<form id="resource-modal-form" method="post" action="">
+						<div class="modal-header">
+							<h3 class="modal-title">Add Resource</h3>
+						</div>
+						<div class="modal-body">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="id">ID</label>
+										<input type="text" name="id" class="form-control" value="" placeholder="ID" />
+									</div>
+									<div class="form-group">
+										<label for="title">Title</label>
+										<input type="text" name="title" class="form-control" value="" placeholder="Title" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<a class="btn btn-danger" href="#delete-">Delete Resource</a>
+							<input type="submit" name="saveResource" class="btn btn-primary" value="Save Resource" />
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- #event-modal -->
+		<div id="event-modal" class="modal fade">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<form id="event-modal-form" method="post" action="">
+						<div class="modal-header">
+							<h3 class="modal-title">Add Event</h3>
+						</div>
+						<div class="modal-body">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="id">ID</label>
+										<input type="text" name="id" class="form-control" value="" placeholder="ID" />
+									</div>
+									<div class="form-group">
+										<label for="resourceId">Resource ID</label>
+										<input type="text" name="resourceId" class="form-control" value="" placeholder="resource-id" />
+									</div>
+									<div class="form-group">
+										<label for="title">Title</label>
+										<input type="text" name="title" class="form-control" value="" placeholder="Title" />
+									</div>
+									<div class="form-group">
+										<label for="url">URL</label>
+										<input type="text" name="url" class="form-control" value="" placeholder="URL" />
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="start">Start</label>
+										<input type="text" name="start" class="form-control" value="" placeholder="Start" />
+									</div>
+									<div class="form-group">
+										<label for="end">End</label>
+										<input type="text" name="end" class="form-control" value="" placeholder="End" />
+									</div>
+									<div class="form-group">
+										<label for="eventColor">Color</label>
+										<input type="text" name="eventColor" class="form-control" value="" placeholder="Color" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<input type="submit" name="saveResource" class="btn btn-primary" value="Save Event" />
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			var calendarRef = new Firebase("https://gc-marketing.firebaseio.com/marketing-calendar");
+
+			calendarRef.on("value",function(snapshot) {
+				var dataResources = JSON.parse(JSON.stringify(snapshot.child('resources').val()));
+				var dataEvents = JSON.parse(JSON.stringify(snapshot.child('events').val()))
+
+				$("#marketing-calendar").fullCalendar({
+					schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+					now: '2015-08-07',
+					editable: true,
+					aspectRatio: 1,
+					scrollTime: '00:30',
+					header: {
+						left: 'today prev,next',
+						center: 'title',
+						right: 'timelineDay,timelineWeek,month',
+					},
+					defaultView: 'timelineDay',
+					height: 600,
+					resourceAreaWidth: '25%',
+					resourceLabelText: 'Marketing Events',
+					resourceRender: function(resource, cells) {
+						cells.on('click', function() {
+							console.log(resource);
+							$("#resource-modal-form [name='id']").val(resource.id)
+							$("#resource-modal-form [name='title']").val(resource.title)
+							$("#resource-modal .modal-title").text("Edit Resource");
+							$("#resource-modal").modal('show')
+						});
+					},
+					eventClick: function(calEvent,jsEvent,view) {
+						console.log(calEvent);
+						$("#event-modal-form [name='id']").val(calEvent.id);
+						$("#event-modal-form [name='resourceId']").val(calEvent.resourceId);
+						$("#event-modal-form [name='title']").val(calEvent.title);
+						$("#event-modal-form [name='url']").val(calEvent.url);
+						$("#event-modal-form [name='start']").val(calEvent.start);
+						$("#event-modal-form [name='end']").val(calEvent.end);
+						$("#event-modal-form [name='eventColor']").val(calEvent.eventColor);
+						$("#event-modal .modal-title").text("Edit Event");
+						$("#event-modal").modal('show')
+					},
+					resources: dataResources,
+					events: dataEvents
+				});
+			}, function (errorObject) {
+				var html = '';
+				html +="<div class='alert alert-danger'>"+errorObject.code+"</div>";
+				$("#errorContainer").append(html);
+				console.log("The read failed: " + errorObject.code);
+			});
+		</script>
+		<script type="text/javascript">
+			$("#add-resource-button").click(function() {
+				$("#resource-modal-form [name='id']").val("")
+				$("#resource-modal-form [name='title']").val("")
+				$("#resource-modal .modal-title").text("Add Resource");
+			});
+			$("#add-event-button").click(function() {
+				$("#event-modal-form [name='id']").val("");
+				$("#event-modal-form [name='resourceId']").val("");
+				$("#event-modal-form [name='title']").val("");
+				$("#event-modal-form [name='url']").val("");
+				$("#event-modal-form [name='start']").val("");
+				$("#event-modal-form [name='end']").val("");
+				$("#event-modal-form [name='eventColor']").val("");
+				$("#event-modal .modal-title").text("Add Event");
+			});
+		</script>
+		<script type="text/javascript">
+			$('#marketing-calendar-tabs a').click(function (e) {
+			  e.preventDefault();
+			  $(this).tab('show');
+			});
+		</script>
+
+	</body>
+</html>

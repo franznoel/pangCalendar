@@ -1,0 +1,16 @@
+{"resources": [
+	{ "id": "heroes", "title": "Heroes" },
+	{ "id": "subheroes", "title": "Subheroes", "eventColor": "green" },
+	{ "id": "pencil", "title": "Pencil", "eventColor": "orange" },
+	{ "id": "bestSelling", "title": "Best Selling" },
+	{ "id": "atgc", "title": "At Guitar Center" },
+	{ "id": "aboutgc", "title": "About Guitar Center", "eventColor": "red" }
+],
+"events": [
+	{ "id": "1", "resourceId": "heroes", "start": "2015-08-07T02:00:00", "end": "2015-08-07T07:00:00", "title": "event 1", "url": "http://www.guitarcenter.com" },
+	{ "id": "2", "resourceId": "subheroes", "start": "2015-08-07T05:00:00", "end": "2015-08-07T22:00:00", "title": "event 2", "url": "" },
+	{ "id": "3", "resourceId": "pencil", "start": "2015-08-06", "end": "2015-08-08", "title": "event 3", "url": "" },
+	{ "id": "4", "resourceId": "bestSelling", "start": "2015-08-07T03:00:00", "end": "2015-08-07T08:00:00", "title": "event 4", "url": "" },
+	{ "id": "5", "resourceId": "atgc", "start": "2015-08-07T00:30:00", "end": "2015-08-07T02:30:00", "title": "event 5", "url": "" },
+	{ "id": "6", "resourceId": "aboutgc", "start": "2015-08-07T00:30:00", "end": "2015-08-07T02:30:00", "title": "event 5", "url": "" }
+]}

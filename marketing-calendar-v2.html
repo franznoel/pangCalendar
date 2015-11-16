@@ -1,0 +1,395 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Marketing Calendar</title>
+		<link rel="stylesheet" type="text/css" href="/libs/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="/libs/bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="/libs/fullcalendar/fullcalendar.min.css" />
+		<link rel="stylesheet" type="text/css" href="/libs/scheduler/scheduler.min.css" />
+		<link rel="stylesheet" type="text/css" href="/libs/datetimepicker/jquery.datetimepicker.css" />
+		<link rel="stylesheet" type="text/css" href="/css/style.css" />
+
+		<script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+		<script type="text/javascript" src="/libs/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/libs/moment/moment.min.js"></script>
+		<script type="text/javascript" src="/libs/fullcalendar/fullcalendar.min.js"></script>
+		<script type="text/javascript" src="/libs/scheduler/scheduler.min.js"></script>
+		<script type="text/javascript" src="/libs/datetimepicker/jquery.datetimepicker.js"></script>
+		<script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default">
+		  <div class="container-fluid">
+		    <!-- Brand and toggle get grouped for better mobile display -->
+		    <div class="navbar-header">
+		      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+		        <span class="sr-only">Toggle navigation</span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		      </button>
+		      <a class="navbar-brand" href="/">GC Marketing</a>
+		    </div>
+		  </div><!-- /.container-fluid -->
+		</nav>
+
+		<div class="row-fluid">
+			<div class="col-md-2">
+				<div class="list-group">
+					<a href="/flashdeals.html" class="list-group-item">Flash Deals</a>
+					<a href="/marketing-calendar.html" class="list-group-item active">Marketing Calendar</a>
+					<a href="/image-requests.html" class="list-group-item">Image Requests</a>
+					<a href="/chat-rooms.html" class="list-group-item">Chat Rooms</a>
+					<a href="/users.html" class="list-group-item">Users</a>
+				</div>
+			</div>
+			<div class="col-md-10">
+				<h3>Marketing Calendar</h3>
+				<ul id="marketing-calendar-tabs" class="nav nav-tabs" role="tablist">
+					<li class="active"><a href="#calendar-dispaly" data-target="#calendar-display" data-toggle="tab">Calendar</a></li>
+					<li><a href="#resources-list" data-toggle="tab">Resources</a></li>
+					<li><a href="#events-list" data-toggle="tab">Events</a></li>
+				</ul>
+				<br/>
+				<div class="tab-content">
+					<div id="calendar-display" class="tab-pane active">
+						<div class="btn-toolbar calendar-buttons">
+							<a href="/marketing-calendar.html" class="btn btn-success btn-sm">Refresh</a>
+						</div>
+						<div id="marketing-calendar"></div>
+						<div id="errorContainer"></div>
+					</div>
+					<div id="resources-list" class="tab-pane">
+						<h3>Resources</h3>
+						<div class="btn-toolbar calendar-buttons">
+							<a id="add-resource" href="" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#resources-modal">Add Resource</a>
+							<a id="delete-resource" href="#delete-resource" class="btn btn-danger btn-sm" data-key="">Delete Resource</a>
+						</div>
+						<div class="row">
+							<div class="col-md-8">
+								<table id="resources-table" class="table table-bordered table-hover">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Name</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div id="events-list" class="tab-pane">
+						<h3>Events</h3>
+						<div class="btn-toolbar calendar-buttons">
+							<a id="add-event" href="#add-event" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#event-modal">Add Event</a>
+							<a id="delete-event" href="#delete-event" class="btn btn-danger btn-sm" data-key="">Delete Event</a>
+						</div>
+						<table id="events-table" class="table table-bordered table-hover">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Resource ID</th>
+									<th>Title</th>
+									<th>URL</th>
+									<th>Start</th>
+									<th>End</th>
+									<th>Event Color</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			var ref = new Firebase("https://gc-marketing.firebaseio.com");
+			var marketingRef = ref.child("marketing-calendar");
+			var resourcesRef = marketingRef.child("resources");
+			var eventsRef = marketingRef.child("events");
+		    var cleanText = function(someText) { return someText.replace(/(\r\n|\n|\r)/gm,""); }
+		    var convertToIso = function(dateTimeText) { return new Date(dateTimeText).toISOString(); }
+
+			// If Add Resource is click, will add dummy username and password.
+			$("#add-resource").click(function() {
+				resourcesRef.push({
+					id: "[id]",
+					title: "[title]"
+				});
+			});
+
+			// If Add Event is click, will add dummy username and password.
+			$("#add-event").click(function() {
+				eventsRef.push({
+					id: "[id]",
+					resourceId: "[resourceId]",
+					start: "[start]",
+					end: "[end]",
+					title: "[title]",
+					url: "[url]",
+					eventColor: "[eventColor]"
+				});
+			});
+
+
+			// Remove Resource if Delete User is clicked.
+			$("#delete-resource").click(function() {
+				var resourceKey = $(this).data('key');
+				resourcesRef.child(resourceKey).set({});
+				$("#delete-resource").css('display','none');
+				console.log('Deleted ' + resourceKey);
+			});
+
+			// Remove Events if Delete User is clicked.
+			$("#delete-event").click(function() {
+				var eventKey = $(this).data('key');
+				eventsRef.child(eventKey).set({});
+				$("#delete-event").css('display','none');
+				console.log('Deleted ' + eventKey);
+			});
+
+			// Load resources value and manipulate data
+			resourcesRef.on("value",function(snapshot) {
+				var html = '';
+				snapshot.forEach(function(resource) {
+					html+='<tr data-key="'+ resource.key() +'">';
+					html+='<td>'+resource.child("id").val()+'</td>';
+					html+='<td>'+resource.child("title").val()+'</td>';
+					html+='</tr>';
+				});
+				$("#resources-table tbody").html(html);
+
+				// Select row
+				$("#resources-table tr").click(function() {
+					var key = $(this).data("key");
+					$("#resources-table tr").removeClass('warning');
+					$(this).addClass('warning');
+					$("#delete-resource").attr("data-key",$(this).data("key"));
+					var deleteKey = $("#delete-resource").data("key");
+					if (deleteKey) { $("#delete-resource").css("display","inline-block"); } else { $("#delete-resource").hide(); }
+					// if (deleteKey) { $("#delete-user").css("display","inline"); } else { $("#delete-user").css("display","none"); }
+				});
+
+				// Cancel Editing and unselect tr (table row)
+				$("*").keyup(function(e) {
+					if (e.keyCode==27) {
+						var activeInput = $(".cellEditing textarea.form-control");
+						// return all edits.
+						activeInput.each(function(key,value) {
+							var content = $(this).html();
+							// console.log(key,content)
+							var editing = $(".cellEditing");
+							editing.each(function(key,value) {
+								$(this).html($(this).text());
+								$(".cellEditing").removeClass("cellEditing");
+							});
+						});
+						// remove selection
+						$("#delete-resource").attr("data-key","").hide();
+						$("tr.warning").removeClass("warning");
+					}
+				});
+
+				$("#resources-table tr").dblclick(function() {
+					var field = $(this).find("td");
+					var resourceKey = $(this).attr("data-key");
+
+					console.log(resourceKey);
+					field.each(function(key,val) {
+						var editing = $(this).hasClass('cellEditing');
+						var content = $(this).html();
+						$(this).addClass('cellEditing');
+						if (editing==false) {
+							switch(key) {
+								case 0: $(this).html('<textarea name="id" class="form-control">'+content+'</textarea>');break;
+								case 1: $(this).html('<textarea name="title" class="form-control">'+content+'</textarea>');break;
+							}
+						}
+					});
+
+					$("td.cellEditing textarea.form-control").focus(function() {
+						$(this).first().keyup(function(e) {
+							if (e.which == 13) {
+								// Set the user access
+								resourceData = {
+									"id": cleanText($("textarea[name='id']").val()),
+									"title": cleanText($("textarea[name='title']").val()),
+								}
+								console.log(resourceData);
+								resourcesRef.child(resourceKey).update(resourceData);
+								$("#delete-event").hide();
+							}
+						});
+					});
+				});
+			});
+
+			// Load resources value and manipulate data
+			eventsRef.on("value",function(snapshot) {
+				var html = '';
+				snapshot.forEach(function(mEvent) {
+					// console.log(mEvent.val());
+					html+='<tr data-key="'+ mEvent.key() +'">';
+					html+='<td>'+mEvent.child("id").val()+'</td>';
+					html+='<td>'+mEvent.child("resourceId").val()+'</td>';
+					html+='<td>'+mEvent.child("title").val()+'</td>';
+					html+='<td>'+mEvent.child("url").val()+'</td>';
+					html+='<td>'+mEvent.child("start").val()+'</td>';
+					html+='<td>'+mEvent.child("end").val()+'</td>';
+					html+='<td>'+mEvent.child("eventColor").val()+'</td>';
+					html+='</tr>';
+				});
+				$("#events-table tbody").html(html);
+
+				// Select row
+				$("#events-table tr").click(function() {
+					var key = $(this).data("key");
+					$("#events-table tr").removeClass('warning');
+					$(this).addClass('warning');
+					$("#delete-event").attr("data-key",$(this).data("key"));
+					var deleteKey = $("#delete-event").data("key");
+					if (deleteKey) { $("#delete-event").css("display","inline-block"); } else { $("#delete-event").hide(); }
+				});
+
+				// Cancel Editing and unselect tr (table row)
+				$("*").keyup(function(e) {
+					if (e.keyCode==27) {
+						var activeInput = $(".cellEditing .form-control");
+						activeInput.each(function(key,value) {
+							var content = $(this).val();
+							// console.log($(this))
+							switch(key) {
+								case 0: $(this).text(content);break;
+								case 1: $(this).text(content);break;
+								case 2: $(this).text(content);break;
+								case 3: $(this).text(content);break;
+								case 4: $(this).text(content);break;
+								case 5: $(this).text(content);break;
+								case 6: $(this).text(content);break;
+							}
+						});
+						// remove selection
+						$("#delete-event").attr("data-key","").hide();
+						$("tr.warning").removeClass("warning");
+					}
+				});
+
+				$("#events-table tr").dblclick(function() {
+					var field = $(this).find("td");
+					var eventKey = $(this).attr("data-key");
+
+					// console.log(eventKey);
+					field.each(function(key,val) {
+						var editing = $(this).hasClass('cellEditing');
+						var content = $(this).html();
+						$(this).addClass('cellEditing');
+						if (editing==false) {
+							switch(key) {
+								case 0: $(this).html('<textarea name="id" class="form-control">'+content+'</textarea>');break;
+								case 1: $(this).html('<textarea name="resourceId" class="form-control">'+content+'</textarea>');break;
+								case 2: $(this).html('<textarea name="title" class="form-control">'+content+'</textarea>');break;
+								case 3: $(this).html('<textarea name="url" class="form-control">'+content+'</textarea>');break;
+								case 4: $(this).html('<input type="datetime" name="start" value="'+content+'" class="form-control">');break;
+								case 5: $(this).html('<input type="datetime" name="end" value="'+content+'" class="form-control">');break;
+								case 6: $(this).html('<textarea name="eventColor" class="form-control">'+content+'</textarea>');break;
+							}
+						}
+					});
+					$("[type='datetime'].form-control").datetimepicker();
+
+
+					$("td.cellEditing textarea.form-control").focus(function() {
+						$(this).first().keyup(function(e) {
+							if (e.which == 13) {
+								// Set the user access
+								// console.log($("textarea.form-control"))
+								eventData = {
+									"id": cleanText($("textarea[name='id']").val()),
+									"resourceId": cleanText($("textarea[name='resourceId']").val()),
+									"title": cleanText($("textarea[name='title']").val()),
+									"url": cleanText($("textarea[name='url']").val()),
+									"start": convertToIso($("input[name='start']").val()),
+									"end": convertToIso($("input[name='end']").val()),
+									"eventColor": cleanText($("textarea[name='eventColor']").val())
+								}
+								console.log(eventData);
+								eventsRef.child(eventKey).update(eventData);
+							}
+						});
+					});
+				});
+			});
+
+			// Load marketing calendar value and manipulate data.
+			marketingRef.on("value",function(snapshot) {
+				// Resources array
+				var resourcesVal = snapshot.child("resources");
+				var dataResources = []
+				resourcesVal.forEach(function(resource) {
+					dataResources.push({
+						'id':resource.val().id,
+						'title': resource.val().title
+					})
+				});
+
+				// Events array
+				var eventsVal = snapshot.child("events");
+				var dataEvents = []
+				eventsVal.forEach(function(event) {
+					dataEvents.push({
+						'id':event.val().id,
+						'title': event.val().title,
+						'resourceId':event.val().resourceId,
+						'start': event.val().start,
+						'end':event.val().end,
+						'eventColor': event.val().eventColor
+					})
+					console.log(dataEvents);
+				});
+
+
+				// var dataResources = JSON.parse(JSON.stringify(resourcesVal));
+				// var dataEvents = JSON.parse(JSON.stringify(snapshot.child('events').val()))
+
+				// Creates the marketing calendar
+				$("#marketing-calendar").fullCalendar({
+					schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+					now: '2015-08-07',
+					editable: true,
+					aspectRatio: 1,
+					scrollTime: '00:30',
+					header: {
+						left: 'today prev,next',
+						center: 'title',
+						right: 'timelineDay,timelineWeek,month',
+					},
+					defaultView: 'month',
+					height: 600,
+					resourceAreaWidth: '25%',
+					resourceLabelText: 'Marketing Events',
+					resourceRender: function(resource, cells) {},
+					eventClick: function(calEvent,jsEvent,view) {},
+					eventDrop: function(calEvent,delta,revertFunc,jsEvent,ui,view) {},
+					resources: dataResources,
+					events: dataEvents
+				});
+			}, function (errorObject) {
+				var html = '';
+				html +="<div class='alert alert-danger'>"+errorObject.code+"</div>";
+				$("#errorContainer").append(html);
+				console.log("The read failed: " + errorObject.code);
+			});
+		</script>
+		<script type="text/javascript">
+			$('#marketing-calendar-tabs a').click(function (e) {
+			  e.preventDefault();
+			  $(this).tab('show');
+			});
+		</script>
+	</body>
+</html>

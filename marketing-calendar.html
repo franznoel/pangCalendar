@@ -1,0 +1,320 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Marketing Calendar</title>
+		<link rel="stylesheet" type="text/css" href="/libs/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="/libs/bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="/libs/fullcalendar/fullcalendar.min.css" />
+		<link rel="stylesheet" type="text/css" href="/libs/scheduler/scheduler.min.css" />
+		<link rel="stylesheet" type="text/css" href="/css/style.css" />
+
+		<script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+		<script type="text/javascript" src="/libs/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/libs/moment/moment.min.js"></script>
+		<script type="text/javascript" src="/libs/fullcalendar/fullcalendar.min.js"></script>
+		<script type="text/javascript" src="/libs/scheduler/scheduler.min.js"></script>
+		<script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
+		<script type="text/javascript" src="/js/script.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-default">
+		  <div class="container-fluid">
+		    <!-- Brand and toggle get grouped for better mobile display -->
+		    <div class="navbar-header">
+		      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+		        <span class="sr-only">Toggle navigation</span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		      </button>
+		      <a class="navbar-brand" href="/">GC Marketing</a>
+		    </div>
+		  </div><!-- /.container-fluid -->
+		</nav>
+
+		<div class="row-fluid">
+			<div class="col-md-2">
+				<div class="list-group">
+					<a href="/marketing-calendar.html" class="list-group-item active">Marketing Calendar</a>
+					<a href="/flashdeals.html" class="list-group-item">Flash Deals</a>
+					<a href="/image-requests.html" class="list-group-item">Image Requests</a>
+				</div>
+				<ul id="unassignedEvents" class="list-group">
+					<li class="list-group-item">Demo</li>
+					<li class="list-group-item">Demo</li>
+					<li class="list-group-item">Demo</li>
+				</ul>
+			</div>
+			<div class="col-md-10">
+				<h3>Marketing Calendar</h3>
+				<div id="marketing-calendar"></div>
+				<div id="errorContainer"></div>
+			</div>
+		</div>
+
+
+		<!-- #alert-modal -->
+		<div id="alert-modal" class="modal fade">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<form id="alert-modal-form" method="post" action="">
+						<div class="modal-header">	
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		    				<h4 class="modal-title">Alert Modal</h4>
+						</div>
+						<div class="modal-body">
+							<p>The resource does not exist.</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- #promo-modal -->
+		<div id="promo-modal" class="modal fade">
+			<div class="modal-dialog modal-md">
+				<div class="modal-content">
+					<form id="promo-modal-form" method="post" action="">
+						<div class="modal-header">	
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		    				<h4 class="modal-title">Add Promos</h4>
+						</div>
+						<div class="modal-body">
+							<div class="form-group">
+								<label>Promo ID</label>
+								<input type="text" id="promoId" name="promoId" value="" class="form-control" placeholder="Promo ID" />
+							</div>
+							<div class="form-group">
+								<label>Promo Name</label>
+								<input type="text" id="promoTitle" name="promoTitle" value="" class="form-control" placeholder="Promo Title"/>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<!-- <button id="deleteResource" type="button" class="btn btn-danger" data-dismiss="modal">Delete</button> -->
+        					<button id="savePromo" class="btn btn-primary">Save Promo</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- #events-modal -->
+		<div id="event-modal" class="modal fade">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<form id="event-modal-form" method="post" action="">
+						<div class="modal-header">	
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		    				<h4 class="modal-title">Add Events</h4>
+						</div>
+						<div class="modal-body">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label>Resources</label>
+										<select id="resourcesSelect" name="resources" class="form-control">
+											<option></option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label>Event ID</label>
+										<input type="text" id="eventId" name="eventId" value="" class="form-control" placeholder="Event ID" />
+									</div>
+									<div class="form-group">
+										<label>Event Name</label>
+										<input type="text" id="eventTitle" name="eventTitle" value="" class="form-control" placeholder="Event Title"/>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label>Event Start</label>
+										<input type="datetime-local" id="eventStart" name="eventStart" value="" class="form-control" placeholder="Event Start"/>
+									</div>
+									<div class="form-group">
+										<label>Event End</label>
+										<input type="datetime-local" id="eventEnd" name="eventEnd" value="" class="form-control" placeholder="Event End"/>
+									</div>
+									<div class="form-group">
+										<label>Event Color</label>
+										<input id="eventColor" type="text" name="eventColor" class="form-control" value="" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<!-- <button id="deleteResource" type="button" class="btn btn-danger" data-dismiss="modal">Delete</button> -->
+        					<button id="saveEvent" type="button" class="btn btn-primary">Save Event</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>		
+
+		<script type="text/javascript">
+			function setEventColor() {
+				var resourceId = $(this).val() ? $(this).val() : $("#event-modal-form").val();
+				switch(resourceId) {
+					case "heroes": $("#eventColor").css("backgroundColor","blue"); break;
+					case "subheroes": $("#eventColor").css("backgroundColor","red"); break;
+					case "pencil": $("#eventColor").css("backgroundColor","green"); break;
+					case "atgc": $("#eventColor").css("backgroundColor","orange"); break;
+					default:break;
+				}
+			}
+			setEventColor();
+		</script>
+
+		<script type="text/javascript">
+			var ref = new Firebase("https://gc-marketing.firebaseio.com");
+			ref.onAuth(authDataCallback);
+			var marketingRef = ref.child("marketing-calendar");
+			var resourcesRef = marketingRef.child("resources");
+			var eventsRef = marketingRef.child("events");
+		    var cleanText = function(someText) { return someText.replace(/(\r\n|\n|\r)/gm,""); }
+		    var convertToIso = function(dateTimeText) { return new Date(dateTimeText).toISOString(); }
+
+			// Load marketing calendar value and manipulate data.
+			marketingRef.on("value",function(snapshot) {
+				// Resources array
+				var resourcesVal = snapshot.child("resources");
+				var dataResources = []
+				resourcesVal.forEach(function(resource) {
+					dataResources.push({
+						'id':resource.val().id,
+						'title': resource.val().title
+					})
+				});
+
+				// Events array
+				var eventsVal = snapshot.child("events");
+				var dataEvents = []
+				eventsVal.forEach(function(event) {
+					dataEvents.push({
+						'id':event.val().id,
+						'title': event.val().title,
+						'resourceId':event.val().resourceId,
+						'start': event.val().start,
+						'end':event.val().end,
+						'eventColor': event.val().eventColor
+					})
+					// console.log(dataEvents);
+				});
+
+				// var dataResources = JSON.parse(JSON.stringify(resourcesVal));
+				// var dataEvents = JSON.parse(JSON.stringify(snapshot.child('events').val()))
+
+				// Creates the marketing calendar
+				$("#marketing-calendar").fullCalendar({
+					schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+					// now: '2015-08-07',
+					editable: true,
+					aspectRatio: 6,
+					header: {
+						left: 'addPromo addEvent today prev,next',
+						center: 'title',
+						right: 'agendaDay,agendaWeek,timelineMonth',
+					},
+					customButtons: {
+						addPromo: {
+							text: '+ promos',
+							click: function() {
+								$("#promo-modal .modal-title").text("Add Promo");
+								$("#promo-modal-form #promoId").val("").prop("disabled",false);
+								$("#promo-modal-form #promoTitle").val("").prop("disabled",false);
+								$("#promo-modal-form #savePromo").show();
+								$('#promo-modal').modal();
+							}
+						},
+						addEvent: {
+							text: '+ events',
+							click: function() {
+								var resources = $("#marketing-calendar").fullCalendar('getResources');
+								var resourceSelect = "";
+								for(var i=0;i<resources.length;i++) {
+									resourcesSelect+= "<option value='"+resources[i].id+"'>"+resources[i].title+"</option>";
+								}
+								$("#event-modal-form #resourcesSelect").html(resourcesSelect);
+								$("#event-modal").modal();
+							}
+						}
+					},
+					defaultView: 'timelineMonth',
+					height: 600,
+					resourceAreaWidth: '25%',
+					resourceLabelText: 'Web Marketing Promos',
+					resourceRender: function(resource, cells) {},
+					eventClick: function(calEvent,jsEvent,view) {
+						$("#events-modal").modal();
+					},
+					eventDrop: function(calEvent,delta,revertFunc,jsEvent,ui,view) {},
+					resources: dataResources,
+					events: dataEvents
+				});
+
+				// When resource is clicked, show promo
+				$("#marketing-calendar .fc-cell-content").dblclick(function() {
+					var resourceTitle = $(this).find(".fc-cell-text").html();
+					var resources = $("#marketing-calendar").fullCalendar('getResources');
+					for (var i=0;i<resources.length;i++) {
+						if (resources[i].title==resourceTitle) {
+							resourceId = resources[i].id;
+							resourceTitle = resources[i].title;
+						}
+					}
+
+					// console.log(resourceId,resourceTitle);
+					$("#promo-modal .modal-title").text("Promo");
+					$("#promo-modal-form #promoId").val(resourceId).attr("disabled","disabled");
+					$("#promo-modal-form #promoTitle").val(resourceTitle).attr("disabled","disabled");
+					$("#promo-modal-form #savePromo").hide();
+			    	$("#promo-modal").modal();
+				});
+
+				// If #savePromo is clicked, will save Promo resource id and resource title field to fullCalendar.
+				$("#savePromo").click(function() {
+					var resourceId = $("#promo-modal-form #promoId").val();
+					var resourceTitle = $("#promo-modal-form #promoTitle").val();
+					var newResource = {"id":resourceId,"title":resourceTitle};
+					// console.log(newResource);
+					$("#marketing-calendar").fullCalendar('addResource',newResource);
+					resourcesRef.push(newResource);
+				});
+
+				// If #saveEvent is clicked, will save Event id and resource title field to fullCalendar.
+				$("#saveEvent").click(function() {
+					console.log("Save Event");
+					var id = $("#event-modal-form #resourcesSelect").val();
+					var resourceId = $("#event-modal-form #eventId").val();
+					var title = $("#event-modal-form #eventTitle").val();
+					var eventStart = $("#event-modal-form #eventStart").val();
+					var eventEnd = $("#event-modal-form #eventEnd").val();
+					var eventColor = $("#event-modal-form #eventColor").val();;
+					var newEvent = {"id":id,"resourceId":resourceId,"title": title,"start": eventStart,"end": eventEnd,"eventColor":eventColor};
+					console.log(newEvent);
+					$("#marketingCalendar").fullCalendar('addEvent',newEvent);
+					eventsRef.push(newEvent);
+				});
+
+
+				// Remove Events if Delete User is clicked.
+				$("#deleteEvent").click(function() {
+					var eventKey = $(this).data('key');
+					eventsRef.child(eventKey).set({});
+					$("#delete-event").css('display','none');
+					console.log('Deleted ' + eventKey);
+				});
+
+			}, function (errorObject) {
+				var html = '';
+				html +="<div class='alert alert-danger'>"+errorObject.code+"</div>";
+				$("#errorContainer").append(html);
+				console.log("The read failed: " + errorObject.code);
+			});
+		</script>
+	</body>
+</html>
