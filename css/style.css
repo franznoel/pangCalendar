@@ -1,28 +1,64 @@
-#flashdeals > tbody > tr > td textarea {width:100%;height:100%;padding:0;margin:0;}
+#flashdeals > tbody > tr > td textarea {
+    width:100%;
+    height:100%; 
+    padding:0;
+    margin:0;
+}
+#login-panel { 
+    margin:100px 0 0 0;
+}
+#flashdeals tbody td.td-name {
+    width:35%;
+}
+#flashdeals tbody td.td-wasPrice {
+    width:3%;
+}
+#flashdeals tbody td.td-nowPrice {
+    width:3%;
+}
+#flashdeals tbody td.td-savings {
+    width:3%;
+}
+#flashdeals tbody td.td-discount {
+    width:3%;
+}
+#flashdeals tbody td.td-imageUrl {
+    width:10%;
+}
+#flashdeals tbody td.td-url {
+    width:10%;
+}
+#flashdeals tbody td.td-ends {
+    width:5%;
+}
+#flashdeals tbody td.td-available {
+    width:5%;
+}
+.calendar-buttons {
+    margin:10px 0 10px 0;
+}
+#user-buttons {
+    margin:10px 0 10px 0;}
 
-#login-panel { margin:100px 0 0 0; }
-
-
-#flashdeals tbody td.td-name {width:35%;}
-#flashdeals tbody td.td-wasPrice {width:3%;}
-#flashdeals tbody td.td-nowPrice {width:3%;}
-#flashdeals tbody td.td-savings {width:3%;}
-#flashdeals tbody td.td-discount {width:3%;}
-#flashdeals tbody td.td-imageUrl {width:10%;}
-#flashdeals tbody td.td-url {width:10%;}
-#flashdeals tbody td.td-ends {width:5%;}
-#flashdeals tbody td.td-available {width:5%;}
-
-.calendar-buttons {margin:10px 0 10px 0;}
-#user-buttons {margin:10px 0 10px 0;}
-
-.empty-table { text-align:center;padding:3px 0 3px 0; }
-
-.nulled {margin:0;padding:0;}
-
-#delete-user {display:none;}
-#delete-resource {display:none;}
-#delete-event {display:none;}
-
-#cancel-edit {display:none;}
-#escape-message {display:none;}
+.empty-table {
+    text-align:center;padding:3px 0 3px 0; 
+}
+.nulled {
+    margin:0;
+    padding:0;
+}
+#delete-user {
+    display:none;
+}
+#delete-resource {
+    display:none;
+}
+#delete-event {
+    display:none;
+}
+#cancel-edit {
+    display:none;
+}
+#escape-message {
+    display:none;
+}
